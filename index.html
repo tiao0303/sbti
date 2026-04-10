@@ -310,54 +310,80 @@
     }
     
     .slice-card {
-      background: rgba(255,255,255,0.03);
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 16px;
-      border: 1px solid rgba(255,255,255,0.05);
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(236, 72, 153, 0.05) 100%);
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 20px;
+      border: 1px solid rgba(255,255,255,0.1);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .slice-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
     }
     
     .slice-header {
       display: flex;
       align-items: center;
-      gap: 10px;
-      margin-bottom: 12px;
+      gap: 12px;
+      margin-bottom: 16px;
     }
     
     .slice-icon {
-      font-size: 1.5rem;
+      font-size: 2rem;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255,255,255,0.1);
+      border-radius: 12px;
     }
     
     .slice-name {
-      font-size: 1.1rem;
-      font-weight: 600;
+      font-size: 1.3rem;
+      font-weight: 700;
     }
     
     .slice-score {
       margin-left: auto;
-      font-weight: 700;
-      font-size: 0.95rem;
+      font-weight: 800;
+      font-size: 1.1rem;
+      padding: 4px 16px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.1);
     }
     
     .slice-bar-container {
-      height: 8px;
+      height: 12px;
       background: rgba(255,255,255,0.1);
-      border-radius: 4px;
+      border-radius: 6px;
       overflow: hidden;
-      margin-bottom: 15px;
+      margin-bottom: 20px;
     }
     
     .slice-bar {
       height: 100%;
-      border-radius: 4px;
-      transition: width 0.5s ease;
+      border-radius: 6px;
+      transition: width 0.8s ease;
     }
     
     .slice-analysis {
-      font-size: 0.95rem;
-      line-height: 1.7;
-      color: var(--text-muted);
+      font-size: 1.05rem;
+      line-height: 1.9;
+      color: var(--text);
       text-align: left;
+      padding: 16px;
+      background: rgba(0,0,0,0.2);
+      border-radius: 12px;
+      border-left: 3px solid var(--accent);
     }
     
     .reTest-btn {
@@ -502,7 +528,7 @@
         <div class="result-desc" id="resultDesc"></div>
         
         <div class="dimensions-result">
-          <div class="dimensions-title">📊 你的十五维度画像</div>
+          <div class="dimensions-title">🔮 五大切面灵魂解析</div>
           <div id="dimensionsChart"></div>
         </div>
         
