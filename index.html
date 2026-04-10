@@ -386,6 +386,52 @@
       border-left: 3px solid var(--accent);
     }
     
+    .dimensions-breakdown {
+      margin-top: 30px;
+      padding-top: 30px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .dimensions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 12px;
+      margin-top: 20px;
+    }
+    
+    .dim-item {
+      background: rgba(255,255,255,0.03);
+      border-radius: 12px;
+      padding: 12px;
+      text-align: center;
+    }
+    
+    .dim-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+    
+    .dim-bar-wrap {
+      height: 6px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 6px;
+    }
+    
+    .dim-bar {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.5s ease;
+    }
+    
+    .dim-score {
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+    
     .reTest-btn {
       display: inline-block;
       padding: 14px 40px;
@@ -634,6 +680,29 @@
         `;
         chartContainer.appendChild(sliceCard);
       });
+      
+      // Add 15 dimensions breakdown
+      const dimSection = document.createElement('div');
+      dimSection.className = 'dimensions-breakdown';
+      dimSection.innerHTML = `
+        <div class="dimensions-title" style="margin-top: 30px;">📊 十五维度详细打分</div>
+        <div class="dimensions-grid">
+          ${['S1', 'S2', 'S3', 'E1', 'E2', 'E3', 'A1', 'A2', 'A3', 'AC1', 'AC2', 'AC3', 'SO1', 'SO2', 'SO3'].map(dim => {
+            const level = getLevel(dimensionScores[dim]);
+            const dimName = dimensionNames[dim];
+            return `
+              <div class="dim-item">
+                <div class="dim-label">${dimName}</div>
+                <div class="dim-bar-wrap">
+                  <div class="dim-bar" style="width: ${level.percent}%; background: ${level.color};"></div>
+                </div>
+                <div class="dim-score" style="color: ${level.color}">${dimensionScores[dim].toFixed(0)}/${level.label}</div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+      chartContainer.appendChild(dimSection);
     }
     
     function resetTest() {
