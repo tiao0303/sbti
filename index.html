@@ -309,41 +309,55 @@
       margin-bottom: 20px;
     }
     
-    .model-section {
-      margin-bottom: 20px;
+    .slice-card {
+      background: rgba(255,255,255,0.03);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+      border: 1px solid rgba(255,255,255,0.05);
     }
     
-    .model-section-title {
-      font-size: 1rem;
-      color: var(--text-muted);
-      margin-bottom: 10px;
+    .slice-header {
       display: flex;
       align-items: center;
-      gap: 8px;
-    }
-    
-    .dimension-bar {
+      gap: 10px;
       margin-bottom: 12px;
     }
     
-    .dimension-label {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 5px;
-      font-size: 0.85rem;
+    .slice-icon {
+      font-size: 1.5rem;
     }
     
-    .dimension-track {
-      height: 6px;
+    .slice-name {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+    
+    .slice-score {
+      margin-left: auto;
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+    
+    .slice-bar-container {
+      height: 8px;
       background: rgba(255,255,255,0.1);
-      border-radius: 3px;
+      border-radius: 4px;
       overflow: hidden;
+      margin-bottom: 15px;
     }
     
-    .dimension-fill {
+    .slice-bar {
       height: 100%;
-      border-radius: 3px;
+      border-radius: 4px;
       transition: width 0.5s ease;
+    }
+    
+    .slice-analysis {
+      font-size: 0.95rem;
+      line-height: 1.7;
+      color: var(--text-muted);
+      text-align: left;
     }
     
     .reTest-btn {
@@ -563,44 +577,36 @@
       document.getElementById('resultTagline').textContent = result.tagline;
       document.getElementById('resultDesc').textContent = result.desc;
       
-      // Build dimensions chart
+      // Build detailed slice analysis
       const chartContainer = document.getElementById('dimensionsChart');
       chartContainer.innerHTML = '';
       
-      const models = [
+      const slices = [
         { key: 'S', name: '自我认知', icon: '🧠' },
-        { key: 'E', name: '情感', icon: '💕' },
+        { key: 'E', name: '情感模式', icon: '💕' },
         { key: 'A', name: '亲和力', icon: '🤝' },
         { key: 'AC', name: '行动力', icon: '⚡' },
         { key: 'SO', name: '社会化', icon: '🌐' }
       ];
       
-      models.forEach(model => {
-        const dims = Object.keys(dimensionNames).filter(k => dimensionModels[k] === model.key);
+      slices.forEach(slice => {
+        const level = getLevel(modelScores[slice.key]);
+        const sliceAnalysis = result.slices[slice.key] || '暂无详细分析';
         
-        const modelSection = document.createElement('div');
-        modelSection.className = 'model-section';
-        modelSection.innerHTML = `
-          <div class="model-section-title">${model.icon} ${model.name} (${getLevel(modelScores[model.key]).label})</div>
+        const sliceCard = document.createElement('div');
+        sliceCard.className = 'slice-card';
+        sliceCard.innerHTML = `
+          <div class="slice-header">
+            <span class="slice-icon">${slice.icon}</span>
+            <span class="slice-name">${slice.name}</span>
+            <span class="slice-score" style="color: ${level.color}">${level.label} (${modelScores[slice.key].toFixed(1)})</span>
+          </div>
+          <div class="slice-bar-container">
+            <div class="slice-bar" style="width: ${level.percent}%; background: ${level.color};"></div>
+          </div>
+          <div class="slice-analysis">${sliceAnalysis}</div>
         `;
-        
-        dims.forEach(dimKey => {
-          const level = getLevel(dimensionScores[dimKey]);
-          const bar = document.createElement('div');
-          bar.className = 'dimension-bar';
-          bar.innerHTML = `
-            <div class="dimension-label">
-              <span>${dimensionNames[dimKey]}</span>
-              <span>${level.label} (${dimensionScores[dimKey].toFixed(1)})</span>
-            </div>
-            <div class="dimension-track">
-              <div class="dimension-fill" style="width: ${level.percent}%; background: ${level.color};"></div>
-            </div>
-          `;
-          modelSection.appendChild(bar);
-        });
-        
-        chartContainer.appendChild(modelSection);
+        chartContainer.appendChild(sliceCard);
       });
     }
     
