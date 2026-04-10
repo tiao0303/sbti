@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SBTI 人格测试 - Silly Behavioral Type Indicator</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    :root {
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --secondary: #ec4899;
+      --accent: #f59e0b;
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+    }
+    
+    body {
+      font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    /* Hero Section */
+    .hero {
+      text-align: center;
+      padding: 60px 20px;
+      background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 50%, #1e1b4b 100%);
+      border-radius: 0 0 50px 50px;
+      margin-bottom: 40px;
+    }
+    
+    .hero h1 {
+      font-size: 3rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 20px;
+    }
+    
+    .hero p {
+      font-size: 1.2rem;
+      color: var(--text-muted);
+      margin-bottom: 30px;
+    }
+    
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+    
+    .stat {
+      text-align: center;
+    }
+    
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    
+    .stat-label {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+    
+    .start-btn {
+      display: inline-block;
+      padding: 16px 48px;
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: white;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+      margin-top: 30px;
+    }
+    
+    .start-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 40px rgba(99, 102, 241, 0.4);
+    }
+    
+    /* Models Section */
+    .models {
+      padding: 40px 0;
+    }
+    
+    .section-title {
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 40px;
+    }
+    
+    .model-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    
+    .model-card {
+      background: var(--card-bg);
+      border-radius: 20px;
+      padding: 30px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .model-icon {
+      font-size: 3rem;
+      margin-bottom: 15px;
+    }
+    
+    .model-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    
+    .model-dimensions {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 15px;
+    }
+    
+    .model-desc {
+      color: var(--text-muted);
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+    
+    /* Test Section */
+    .test-section {
+      display: none;
+      padding: 40px 0;
+    }
+    
+    .test-section.active {
+      display: block;
+    }
+    
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: var(--card-bg);
+      border-radius: 10px;
+      margin-bottom: 30px;
+      overflow: hidden;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      border-radius: 10px;
+      transition: width 0.3s ease;
+    }
+    
+    .question-card {
+      background: var(--card-bg);
+      border-radius: 24px;
+      padding: 40px;
+      border: 1px solid rgba(255,255,255,0.1);
+      animation: fadeIn 0.5s ease;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .question-number {
+      color: var(--accent);
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    
+    .question-text {
+      font-size: 1.4rem;
+      font-weight: 600;
+      margin-bottom: 30px;
+      line-height: 1.5;
+    }
+    
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    .option {
+      padding: 20px;
+      background: rgba(255,255,255,0.05);
+      border: 2px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 1rem;
+    }
+    
+    .option:hover {
+      background: rgba(99, 102, 241, 0.2);
+      border-color: var(--primary);
+      transform: translateX(5px);
+    }
+    
+    .option.selected {
+      background: var(--primary);
+      border-color: var(--primary);
+    }
+    
+    /* Result Section */
+    .result-section {
+      display: none;
+      padding: 40px 0;
+      text-align: center;
+    }
+    
+    .result-section.active {
+      display: block;
+    }
+    
+    .result-card {
+      background: var(--card-bg);
+      border-radius: 24px;
+      padding: 50px;
+      border: 1px solid rgba(255,255,255,0.1);
+      animation: scaleIn 0.6s ease;
+    }
+    
+    @keyframes scaleIn {
+      from { opacity: 0; transform: scale(0.8); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    
+    .result-badge {
+      display: inline-block;
+      padding: 8px 24px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-radius: 50px;
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+    
+    .result-type {
+      font-size: 4rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--primary), var(--secondary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 10px;
+    }
+    
+    .result-name {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+    
+    .result-tagline {
+      font-size: 1.2rem;
+      color: var(--text-muted);
+      margin-bottom: 30px;
+      font-style: italic;
+    }
+    
+    .result-desc {
+      text-align: left;
+      line-height: 1.8;
+      color: var(--text);
+      margin-bottom: 30px;
+      padding: 20px;
+      background: rgba(255,255,255,0.03);
+      border-radius: 16px;
+    }
+    
+    .dimensions-result {
+      text-align: left;
+      margin-top: 30px;
+      padding-top: 30px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .dimensions-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+    
+    .model-section {
+      margin-bottom: 20px;
+    }
+    
+    .model-section-title {
+      font-size: 1rem;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .dimension-bar {
+      margin-bottom: 12px;
+    }
+    
+    .dimension-label {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+      font-size: 0.85rem;
+    }
+    
+    .dimension-track {
+      height: 6px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    
+    .dimension-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.5s ease;
+    }
+    
+    .reTest-btn {
+      display: inline-block;
+      padding: 14px 40px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: white;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+      margin-top: 30px;
+    }
+    
+    .reTest-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+    }
+    
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+    
+    footer a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+    
+    /* Responsive */
+    @media (max-width: 640px) {
+      .hero h1 { font-size: 2rem; }
+      .stats { gap: 20px; }
+      .stat-number { font-size: 2rem; }
+      .question-text { font-size: 1.2rem; }
+      .result-type { font-size: 3rem; }
+      .result-name { font-size: 1.5rem; }
+      .question-card { padding: 25px; }
+      .result-card { padding: 30px 20px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Hero Section -->
+  <section id="home" class="hero">
+    <div class="container">
+      <h1>SBTI 人格测试</h1>
+      <p>一场关于你的灵魂拷问 — 31 道灵魂提问，15 个维度透视，找到属于你的 27 种人格之一</p>
+      
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-number">31</div>
+          <div class="stat-label">道题</div>
+        </div>
+        <div class="stat">
+          <div class="stat-number">15</div>
+          <div class="stat-label">个维度</div>
+        </div>
+        <div class="stat">
+          <div class="stat-number">5</div>
+          <div class="stat-label">大切面</div>
+        </div>
+        <div class="stat">
+          <div class="stat-number">27</div>
+          <div class="stat-label">种人格</div>
+        </div>
+      </div>
+      
+      <button class="start-btn" onclick="startTest()">开始测试 →</button>
+    </div>
+  </section>
+  
+  <!-- Models Section -->
+  <section class="models container">
+    <h2 class="section-title">五大切面模型</h2>
+    <div class="model-grid">
+      <div class="model-card">
+        <div class="model-icon">🧠</div>
+        <div class="model-title">自我认知模型 (S)</div>
+        <div class="model-dimensions">S1 自信心 · S2 自我意识 · S3 自律能力</div>
+        <div class="model-desc">你有多了解自己？你的自信从何而来？你是不是那种说减肥就真能放下炸鸡的人？</div>
+      </div>
+      
+      <div class="model-card">
+        <div class="model-icon">💕</div>
+        <div class="model-title">情感模型 (E)</div>
+        <div class="model-dimensions">E1 依恋安全感 · E2 情绪波动 · E3 情绪管理</div>
+        <div class="model-desc">你的爱是汹涌澎湃还是风平浪静？是理性地处理情绪，还是情绪处理你？</div>
+      </div>
+      
+      <div class="model-card">
+        <div class="model-icon">🤝</div>
+        <div class="model-title">亲和力模型 (A)</div>
+        <div class="model-dimensions">A1 共情力 · A2 信任倾向 · A3 合作意愿</div>
+        <div class="model-desc">你是社牛之王还是人间观察者？别人哭你会跟着哭，还是默默递纸巾？</div>
+      </div>
+      
+      <div class="model-card">
+        <div class="model-icon">⚡</div>
+        <div class="model-title">行动力模型 (AC)</div>
+        <div class="model-dimensions">AC1 执行力 · AC2 策略思维 · AC3 抗压力</div>
+        <div class="model-desc">说做就做还是先列三页计划？压力来了是化为动力还是化为被子里的蜷缩？</div>
+      </div>
+      
+      <div class="model-card">
+        <div class="model-icon">🌐</div>
+        <div class="model-title">社会化模型 (SO)</div>
+        <div class="model-dimensions">SO1 社交意愿 · SO2 独立性 · SO3 表达欲</div>
+        <div class="model-desc">你是 party 上的焦点还是角落里刷手机的那个？憋在心里还是不吐不快？</div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Test Section -->
+  <section id="test" class="test-section">
+    <div class="container">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      
+      <div class="question-card">
+        <div class="question-number" id="questionNumber">第 1 题 / 共 31 题</div>
+        <div class="question-text" id="questionText"></div>
+        <div class="options" id="optionsContainer"></div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Result Section -->
+  <section id="result" class="result-section">
+    <div class="container">
+      <div class="result-card">
+        <div class="result-badge">恭喜您测出</div>
+        <div class="result-type" id="resultType"></div>
+        <div class="result-name" id="resultName"></div>
+        <div class="result-tagline" id="resultTagline"></div>
+        <div class="result-desc" id="resultDesc"></div>
+        
+        <div class="dimensions-result">
+          <div class="dimensions-title">📊 你的十五维度画像</div>
+          <div id="dimensionsChart"></div>
+        </div>
+        
+        <button class="reTest-btn" onclick="resetTest()">重新测试</button>
+      </div>
+    </div>
+  </section>
+  
+  <footer>
+    <p>SBTI — Silly Behavioral Type Indicator | 这不是科学，这是玄学</p>
+    <p style="margin-top: 10px;">测试结果仅供娱乐，请勿当作心理诊断依据</p>
+  </footer>
+
+  <script src="data.js"></script>
+  <script>
+    let currentQuestion = 0;
+    let answers = [];
+    
+    function startTest() {
+      document.getElementById('home').style.display = 'none';
+      document.querySelector('.models').style.display = 'none';
+      document.getElementById('test').classList.add('active');
+      document.getElementById('result').classList.remove('active');
+      currentQuestion = 0;
+      answers = [];
+      showQuestion();
+    }
+    
+    function showQuestion() {
+      const q = questions[currentQuestion];
+      document.getElementById('questionNumber').textContent = `第 ${currentQuestion + 1} 题 / 共 ${questions.length} 题`;
+      document.getElementById('questionText').textContent = q.q;
+      
+      const progress = ((currentQuestion) / questions.length) * 100;
+      document.getElementById('progressFill').style.width = `${progress}%`;
+      
+      const optionsContainer = document.getElementById('optionsContainer');
+      optionsContainer.innerHTML = '';
+      
+      q.options.forEach((opt, idx) => {
+        const btn = document.createElement('div');
+        btn.className = 'option';
+        btn.textContent = opt;
+        btn.onclick = () => selectOption(idx);
+        optionsContainer.appendChild(btn);
+      });
+    }
+    
+    function selectOption(idx) {
+      answers.push(idx);
+      
+      if (currentQuestion < questions.length - 1) {
+        currentQuestion++;
+        showQuestion();
+      } else {
+        showResult();
+      }
+    }
+    
+    function showResult() {
+      document.getElementById('test').classList.remove('active');
+      document.getElementById('result').classList.add('active');
+      document.getElementById('progressFill').style.width = '100%';
+      
+      const dimensionScores = calculateScores(answers);
+      const modelScores = calculateModelScores(dimensionScores);
+      const personalityType = matchPersonality(dimensionScores, modelScores);
+      const result = personalityTypes[personalityType];
+      
+      document.getElementById('resultType').textContent = personalityType;
+      document.getElementById('resultName').textContent = result.name;
+      document.getElementById('resultTagline').textContent = result.tagline;
+      document.getElementById('resultDesc').textContent = result.desc;
+      
+      // Build dimensions chart
+      const chartContainer = document.getElementById('dimensionsChart');
+      chartContainer.innerHTML = '';
+      
+      const models = [
+        { key: 'S', name: '自我认知', icon: '🧠' },
+        { key: 'E', name: '情感', icon: '💕' },
+        { key: 'A', name: '亲和力', icon: '🤝' },
+        { key: 'AC', name: '行动力', icon: '⚡' },
+        { key: 'SO', name: '社会化', icon: '🌐' }
+      ];
+      
+      models.forEach(model => {
+        const dims = Object.keys(dimensionNames).filter(k => dimensionModels[k] === model.key);
+        
+        const modelSection = document.createElement('div');
+        modelSection.className = 'model-section';
+        modelSection.innerHTML = `
+          <div class="model-section-title">${model.icon} ${model.name} (${getLevel(modelScores[model.key]).label})</div>
+        `;
+        
+        dims.forEach(dimKey => {
+          const level = getLevel(dimensionScores[dimKey]);
+          const bar = document.createElement('div');
+          bar.className = 'dimension-bar';
+          bar.innerHTML = `
+            <div class="dimension-label">
+              <span>${dimensionNames[dimKey]}</span>
+              <span>${level.label} (${dimensionScores[dimKey].toFixed(1)})</span>
+            </div>
+            <div class="dimension-track">
+              <div class="dimension-fill" style="width: ${level.percent}%; background: ${level.color};"></div>
+            </div>
+          `;
+          modelSection.appendChild(bar);
+        });
+        
+        chartContainer.appendChild(modelSection);
+      });
+    }
+    
+    function resetTest() {
+      document.getElementById('home').style.display = 'block';
+      document.querySelector('.models').style.display = 'block';
+      document.getElementById('test').classList.remove('active');
+      document.getElementById('result').classList.remove('active');
+    }
+  </script>
+</body>
+</html>
